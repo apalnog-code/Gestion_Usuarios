@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/user.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    $(document).ready( function () {
+        $('#myTable').DataTable();
+    });
+
+    document.querySelectorAll(".btn-danger").forEach(btn => {
+        btn.addEventListener("click", async function (){
+            let user_id = this.dataset.id;
+
+            let response = await fetch(`api/users/${user_id}`,{
+                method: "DELETE"
+            });
+
+            if(response.ok){
+                document.getElementById(`tr-${user_id}`).remove();
+            }
+        });
+    });
+
+    document.querySelectorAll(".btn-secondary").forEach(btn => {
+        btn.addEventListener("click", async function(){
+           let user_id = this.dataset.id;
+           let response = await fetch(`/user/activar/${user_id}`);
+
+           let tdActive = document.querySelector(`#tdActive-${user_id}`);
+
+           if (response.ok){
+               if (tdActive.textContent === "Active"){
+                   tdActive.textContent = "Unactive";
+                   this.textContent = "Active";
+               } else {
+                   tdActive.textContent = "Active";
+                   this.textContent = "Unactive";
+               }
+           }
+
+        });
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+    <div class="contenedor">
+        <h1>Users</h1>
+        <a style="margin: 1.5%" class="btn btn-primary" href="{{ path('user_create') }}">Create user</a>
+        <table id="myTable" class="display">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>¿Active?</th>
+                <th>Date of creation</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr id="tr-{{ user.id }}">
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.age }}</td>
+                        <td id="tdActive-{{ user.id }}">{{ user.isActive == true ? "Active" : "Unactive" }}</td>
+                        <td>{{ user.createdAt|date("d-m-Y | h:i:s") }}</td>
+                        <td>
+                            <a class="btn btn-warning" href="{{ path('user_edit',{'id':user.id}) }}">Edit</a>
+                            <button class="btn btn-secondary" data-id="{{ user.id }}" id="btnActive-{{ user.id }}">{{ user.isActive == true ? "Unactive" : "Active" }}</button>
+                            <button data-id="{{ user.id }}" class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

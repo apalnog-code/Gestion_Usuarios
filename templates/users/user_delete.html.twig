@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/user.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="card-delete">
+        <h1>Delete user</h1>
+        <p>
+            The user <strong>'{{ user.name }}'</strong> will be deleted. <strong>This action will be automatically, can´t be resolve</strong>
+        </p>
+            <form method="post">
+                <button type="submit" name="confirmar" class="btn btn-success">Confirmar</button>
+                <a href="{{ path('users_list') }}" class="btn btn-danger">Volver</a>
+            </form>
+    </div>
+{% endblock %}
